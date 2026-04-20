@@ -1,62 +1,50 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <title>Birthday Message</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      margin-top: 100px;
-      background: #f5f5f5;
-    }
-    input, button {
-      padding: 10px;
-      font-size: 16px;
-      margin-top: 10px;
-    }
-    #message {
-      margin-top: 30px;
-      font-size: 20px;
-      color: #333;
-    }
-  </style>
-</head>
-<body>
+<h1>誕生日を選んでね🎂</h1>
 
-  <h1>誕生日を選んでね🎂</h1>
-
-  <input type="date" id="birthday">
-  <br>
-  <button onclick="showMessage()">メッセージを見る</button>
-
-  <div id="message"></div>
-
+<select id="month">
+  <option value="">月</option>
   <script>
-    function showMessage() {
-      const input = document.getElementById("birthday").value;
-
-      if (!input) {
-        alert("誕生日を選んでください！");
-        return;
-      }
-
-      // 月日だけ取り出す
-      const date = new Date(input);
-      const key = (date.getMonth() + 1) + "-" + date.getDate();
-
-      const messages = {
-        "1-1": "新年生まれ！今年も最高の1年に✨",
-        "2-14": "バレンタイン生まれ💖愛にあふれてる！",
-        "4-20": "今日生まれのあなたへ🎉特別な日！",
-        "12-25": "クリスマス生まれ🎄奇跡の人！"
-      };
-
-      const msg = messages[key] || "あなたの誕生日も素敵な日だよ✨";
-
-      document.getElementById("message").innerText = msg;
+    for (let i = 1; i <= 12; i++) {
+      document.write(`<option value="${i}">${i}月</option>`);
     }
   </script>
+</select>
 
-</body>
-</html>
+<select id="day">
+  <option value="">日</option>
+  <script>
+    for (let i = 1; i <= 31; i++) {
+      document.write(`<option value="${i}">${i}日</option>`);
+    }
+  </script>
+</select>
+
+<br><br>
+
+<button onclick="showMessage()">メッセージを見る</button>
+
+<div id="message"></div>
+
+<script>
+function showMessage() {
+  const month = document.getElementById("month").value;
+  const day = document.getElementById("day").value;
+
+  if (!month || !day) {
+    alert("月日を選んでください！");
+    return;
+  }
+
+  const key = month + "-" + day;
+
+  const messages = {
+    "1-1": "新年生まれ！✨",
+    "2-14": "バレンタイン💖",
+    "4-20": "今日生まれ🎉",
+    "12-25": "クリスマス🎄"
+  };
+
+  const msg = messages[key] || "素敵な誕生日だね✨";
+
+  document.getElementById("message").innerText = msg;
+}
+</script>
