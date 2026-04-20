@@ -109,8 +109,172 @@ button:hover {
   <select id="day"></select>
 
   <button onclick="showMessage()">メッセージを見る</button>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Special Day</title>
+
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Arial', sans-serif;
+  color: white;
+
+  /* インスタ風グラデーション */
+  background: linear-gradient(
+    270deg,
+    #feda75,
+    #fa7e1e,
+    #d62976,
+    #962fbf,
+    #4f5bd5
+  );
+
+  background-size: 1000% 1000%;
+  animation: gradientMove 10s ease infinite;
+}
+
+/* 背景アニメーション */
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* カード */
+.container {
+  background: rgba(255,255,255,0.2);
+  width: 80%;
+  max-width: 320px;
+  padding: 20px;
+  border-radius: 20px;
+  backdrop-filter: blur(15px);
+  text-align: center;
+
+  /* 影強化 */
+  box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+}
+
+h1 {
+  font-size: 5vw;
+  margin-bottom: 20px;
+}
+
+/* 入力 */
+select, button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 12px;
+  font-size: 4vw;
+}
+
+/* ボタン */
+button {
+  background: white;
+  color: #d62976;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+/* メッセージ */
+#message {
+  margin-top: 20px;
+  font-size: 4.5vw;
+  animation: fadeIn 1s;
+}
+
+/* フェード */
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+/* PC用 */
+@media (min-width: 768px) {
+  h1 {
+    font-size: 24px;
+  }
+
+  select, button {
+    font-size: 16px;
+  }
+
+  #message {
+    font-size: 18px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>誕生日を選んでね!</h1>
+
+  <select id="month"></select>
+  <select id="day"></select>
+
+  <button onclick="showMessage()">メッセージを見る</button>
 
   <div id="message"></div>
+</div>
+
+<script>
+// 月日生成
+const monthSelect = document.getElementById("month");
+const daySelect = document.getElementById("day");
+
+monthSelect.innerHTML = '<option value="">月</option>';
+daySelect.innerHTML = '<option value="">日</option>';
+
+for (let i = 1; i <= 12; i++) {
+  monthSelect.innerHTML += `<option value="${i}">${i}月</option>`;
+}
+
+for (let i = 1; i <= 31; i++) {
+  daySelect.innerHTML += `<option value="${i}">${i}日</option>`;
+}
+
+// メッセージ
+function showMessage() {
+  const m = monthSelect.value;
+  const d = daySelect.value;
+
+  if (!m || !d) {
+    alert("選んでね！");
+    return;
+  }
+
+  const key = m + "-" + d;
+
+  const messages = {
+    "1-1": "最高のスタートの日✨",
+    "2-14": "愛にあふれてる日💖",
+    "7-7": "ロマンチックな日🌟",
+    "12-25": "奇跡の存在🎄"
+  };
+
+  document.getElementById("message").innerText =
+    messages[key] || "あなたの誕生日は特別な日✨";
+}
+</script>
+
+</body>
+</html>  <div id="message"></div>
 </div>
 
 <script>
