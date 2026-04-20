@@ -2,6 +2,8 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Special Day</title>
 
 <style>
@@ -14,7 +16,6 @@ body {
   font-family: 'Arial', sans-serif;
   color: white;
 
-  /* インスタ風グラデーション */
   background: linear-gradient(
     270deg,
     #feda75,
@@ -28,39 +29,37 @@ body {
   animation: gradientMove 10s ease infinite;
 }
 
-/* 背景アニメーション */
 @keyframes gradientMove {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
 
-/* ガラス風カード */
 .container {
   background: rgba(255,255,255,0.2);
-  padding: 30px;
+  padding: 6vw;
   border-radius: 20px;
   backdrop-filter: blur(15px);
   text-align: center;
-  width: 300px;
+  width: 90%;
+  max-width: 400px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
 
 h1 {
+  font-size: 5vw;
   margin-bottom: 20px;
 }
 
-/* 入力UI */
 select, button {
   width: 100%;
   padding: 12px;
   margin-top: 10px;
   border: none;
   border-radius: 12px;
-  font-size: 16px;
+  font-size: 4vw;
 }
 
-/* ボタン */
 button {
   background: white;
   color: #d62976;
@@ -73,17 +72,30 @@ button:hover {
   transform: scale(1.05);
 }
 
-/* メッセージ表示 */
 #message {
   margin-top: 20px;
-  font-size: 18px;
+  font-size: 4.5vw;
   animation: fadeIn 1s;
 }
 
-/* フェードイン */
 @keyframes fadeIn {
   from {opacity: 0;}
   to {opacity: 1;}
+}
+
+/* PC用調整 */
+@media (min-width: 768px) {
+  h1 {
+    font-size: 24px;
+  }
+
+  select, button {
+    font-size: 16px;
+  }
+
+  #message {
+    font-size: 18px;
+  }
 }
 </style>
 </head>
@@ -102,7 +114,6 @@ button:hover {
 </div>
 
 <script>
-// 月と日を自動生成
 const monthSelect = document.getElementById("month");
 const daySelect = document.getElementById("day");
 
@@ -117,7 +128,6 @@ for (let i = 1; i <= 31; i++) {
   daySelect.innerHTML += `<option value="${i}">${i}日</option>`;
 }
 
-// メッセージ表示
 function showMessage() {
   const m = monthSelect.value;
   const d = daySelect.value;
