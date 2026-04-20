@@ -142,19 +142,15 @@ function showMessage() {
   document.getElementById("message").innerText =
     messages[key] || "あなたの誕生日は特別な日✨";
 
-  // 🔥 ログ送信（ここ追加）
+  // 🔥 ログ送信（CORS対策済み）
   fetch("https://script.google.com/macros/s/AKfycbzKc3HRqiui7328snwKYTiSbnRh34QmoZPyOrVVsX3nauJuoRU-AWVkBa8yNOWmUR7GBQ/exec", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    mode: "no-cors", // ←これが超重要
     body: JSON.stringify({
       date: key,
       time: new Date().toLocaleString()
     })
-  })
-  .then(res => console.log("送信成功"))
-  .catch(err => console.error("送信エラー", err));
+  });
 }
 </script>
 
