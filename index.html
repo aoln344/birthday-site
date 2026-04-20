@@ -16,117 +16,6 @@ body {
   font-family: 'Arial', sans-serif;
   color: white;
 
-  background: linear-gradient(
-    270deg,
-    #feda75,
-    #fa7e1e,
-    #d62976,
-    #962fbf,
-    #4f5bd5
-  );
-
-  background-size: 1000% 1000%;
-  animation: gradientMove 10s ease infinite;
-}
-
-@keyframes gradientMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-.container {
-  background: rgba(255,255,255,0.2);
-  padding: 6vw;
-  border-radius: 20px;
-  backdrop-filter: blur(15px);
-  text-align: center;
-  width: 90%;
-  max-width: 400px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-}
-
-h1 {
-  font-size: 5vw;
-  margin-bottom: 20px;
-}
-
-select, button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  border: none;
-  border-radius: 12px;
-  font-size: 4vw;
-}
-
-button {
-  background: white;
-  color: #d62976;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-button:hover {
-  transform: scale(1.05);
-}
-
-#message {
-  margin-top: 20px;
-  font-size: 4.5vw;
-  animation: fadeIn 1s;
-}
-
-@keyframes fadeIn {
-  from {opacity: 0;}
-  to {opacity: 1;}
-}
-
-/* PC用調整 */
-@media (min-width: 768px) {
-  h1 {
-    font-size: 24px;
-  }
-
-  select, button {
-    font-size: 16px;
-  }
-
-  #message {
-    font-size: 18px;
-  }
-}
-</style>
-</head>
-
-<body>
-
-<div class="container">
-  <h1>誕生日を選んでね🎂</h1>
-
-  <select id="month"></select>
-  <select id="day"></select>
-
-  <button onclick="showMessage()">メッセージを見る</button>
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Special Day</title>
-
-<style>
-body {
-  margin: 0;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-family: 'Arial', sans-serif;
-  color: white;
-
   /* インスタ風グラデーション */
   background: linear-gradient(
     270deg,
@@ -223,7 +112,7 @@ button:hover {
 <body>
 
 <div class="container">
-  <h1>誕生日を選んでね!</h1>
+  <h1>誕生日を選んでね🎂</h1>
 
   <select id="month"></select>
   <select id="day"></select>
@@ -250,48 +139,6 @@ for (let i = 1; i <= 31; i++) {
 }
 
 // メッセージ
-function showMessage() {
-  const m = monthSelect.value;
-  const d = daySelect.value;
-
-  if (!m || !d) {
-    alert("選んでね！");
-    return;
-  }
-
-  const key = m + "-" + d;
-
-  const messages = {
-    "1-1": "最高のスタートの日✨",
-    "2-14": "愛にあふれてる日💖",
-    "7-7": "ロマンチックな日🌟",
-    "12-25": "奇跡の存在🎄"
-  };
-
-  document.getElementById("message").innerText =
-    messages[key] || "あなたの誕生日は特別な日✨";
-}
-</script>
-
-</body>
-</html>  <div id="message"></div>
-</div>
-
-<script>
-const monthSelect = document.getElementById("month");
-const daySelect = document.getElementById("day");
-
-monthSelect.innerHTML = '<option value="">月</option>';
-daySelect.innerHTML = '<option value="">日</option>';
-
-for (let i = 1; i <= 12; i++) {
-  monthSelect.innerHTML += `<option value="${i}">${i}月</option>`;
-}
-
-for (let i = 1; i <= 31; i++) {
-  daySelect.innerHTML += `<option value="${i}">${i}日</option>`;
-}
-
 function showMessage() {
   const m = monthSelect.value;
   const d = daySelect.value;
