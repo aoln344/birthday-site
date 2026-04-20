@@ -1,50 +1,118 @@
-<h1>誕生日を選んでね✌️</h1>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Special Day</title>
 
-<select id="month">
-  <option value="">月</option>
-  <script>
-    for (let i = 1; i <= 12; i++) {
-      document.write(`<option value="${i}">${i}月</option>`);
-    }
-  </script>
-</select>
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+  color: white;
+}
 
-<select id="day">
-  <option value="">日</option>
-  <script>
-    for (let i = 1; i <= 31; i++) {
-      document.write(`<option value="${i}">${i}日</option>`);
-    }
-  </script>
-</select>
+.container {
+  background: rgba(255,255,255,0.15);
+  padding: 30px;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  text-align: center;
+  width: 300px;
+}
 
-<br><br>
+h1 {
+  margin-bottom: 20px;
+}
 
-<button onclick="showMessage()">メッセージを見る</button>
+select, button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+}
 
-<div id="message"></div>
+button {
+  background: white;
+  color: #ff6b81;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+#message {
+  margin-top: 20px;
+  font-size: 18px;
+  animation: fadeIn 1s;
+}
+
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>誕生日を選んでね🎂</h1>
+
+  <select id="month"></select>
+  <select id="day"></select>
+
+  <button onclick="showMessage()">メッセージを見る</button>
+
+  <div id="message"></div>
+</div>
 
 <script>
-function showMessage() {
-  const month = document.getElementById("month").value;
-  const day = document.getElementById("day").value;
+// 月日生成
+const monthSelect = document.getElementById("month");
+const daySelect = document.getElementById("day");
 
-  if (!month || !day) {
-    alert("月日を選んでください！");
+monthSelect.innerHTML = '<option value="">月</option>';
+daySelect.innerHTML = '<option value="">日</option>';
+
+for (let i = 1; i <= 12; i++) {
+  monthSelect.innerHTML += `<option value="${i}">${i}月</option>`;
+}
+
+for (let i = 1; i <= 31; i++) {
+  daySelect.innerHTML += `<option value="${i}">${i}日</option>`;
+}
+
+// メッセージ
+function showMessage() {
+  const m = monthSelect.value;
+  const d = daySelect.value;
+
+  if (!m || !d) {
+    alert("選んでね！");
     return;
   }
 
-  const key = month + "-" + day;
+  const key = m + "-" + d;
 
   const messages = {
-    "1-1": "新年生まれ！✨",
-    "2-14": "バレンタイン💖",
-    "4-20": "今日生まれ🎉",
-    "12-25": "クリスマス🎄"
+    "7-7": "ロマンチックな日だね🌟",
+    "12-25": "奇跡の人🎄"
   };
 
-  const msg = messages[key] || "素敵な誕生日だね✨";
-
-  document.getElementById("message").innerText = msg;
+  document.getElementById("message").innerText =
+    messages[key] || "特別な日だよ✨";
 }
 </script>
+
+</body>
+</html>
