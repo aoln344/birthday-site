@@ -41,7 +41,15 @@ body {
   font-size: 6vw;
   margin-bottom: 20px;
   opacity: 0;
-  animation: fadeIn 1s forwards;
+  transition: 1s;
+}
+
+.fade-in {
+  opacity: 1;
+}
+
+.fade-out {
+  opacity: 0;
 }
 
 /* カード */
@@ -60,7 +68,6 @@ body {
   transition: 1s;
 }
 
-/* 表示用クラス */
 .show {
   opacity: 1;
   transform: translateY(0);
@@ -133,9 +140,9 @@ const hour = new Date().getHours();
 
 let greeting = "";
 
-if (hour < 11) {
+if (hour >= 5 && hour <= 10) {
   greeting = "おはよう☀️";
-} else if (hour < 18) {
+} else if (hour >= 11 && hour <= 17) {
   greeting = "こんにちは😊";
 } else {
   greeting = "こんばんは🌙";
@@ -143,10 +150,19 @@ if (hour < 11) {
 
 greetingEl.innerText = greeting;
 
-// 🔥 カードを遅れて表示
+// フェードイン
 setTimeout(() => {
+  greetingEl.classList.add("fade-in");
+}, 100);
+
+// フェードアウト → カード表示
+setTimeout(() => {
+  greetingEl.classList.remove("fade-in");
+  greetingEl.classList.add("fade-out");
+
   document.getElementById("card").classList.add("show");
-}, 2000);
+}, 2500);
+
 
 // 月日生成
 const monthSelect = document.getElementById("month");
@@ -163,6 +179,8 @@ for (let i = 1; i <= 31; i++) {
   daySelect.innerHTML += `<option value="${i}">${i}日</option>`;
 }
 
+
+// 🔥 メイン処理（ログ含めそのまま維持）
 function showMessage() {
   const m = monthSelect.value;
   const d = daySelect.value;
@@ -184,6 +202,35 @@ function showMessage() {
 
   document.getElementById("message").innerText =
     messages[key] || "あなたの誕生日は特別な日✨";
+
+  // 🔥 ① 位置取得
+  fetch("https://ipapi.co/json/")
+    .then(res => res.json())
+    .then(data => {
+      const location = data.city || "unknown";
+
+      // 🔥 ② GAS送信
+      fetch("https://script.google.com/macros/s/AKfycbwdllHoaEMtAClNC1kafLPypg1vNUsQ0yNO3faB7Ljv23KM8Y_s2pLzLdVAvdVHWVniMw/exec", {
+        method: "POST",
+        mode: "no-cors",
+        body: JSON.stringify({
+          date: key,
+          time: new Date().toLocaleString(),
+          location: location
+        })
+      });
+    })
+    .catch(() => {
+      fetch("https://script.google.com/macros/s/AKfycbwdllHoaEMtAClNC1kafLPypg1vNUsQ0yNO3faB7Ljv23KM8Y_s2pLzLdVAvdVHWVniMw/exec", {
+        method: "POST",
+        mode: "no-cors",
+        body: JSON.stringify({
+          date: key,
+          time: new Date().toLocaleString(),
+          location: "unknown"
+        })
+      });
+    });
 }
 </script>
 
