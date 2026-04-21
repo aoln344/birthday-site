@@ -13,6 +13,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
   font-family: 'Arial', sans-serif;
   color: white;
 
@@ -35,6 +36,15 @@ body {
   100% { background-position: 0% 50%; }
 }
 
+/* 挨拶 */
+#greeting {
+  font-size: 6vw;
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: fadeIn 1s forwards;
+}
+
+/* カード */
 .container {
   background: rgba(255,255,255,0.2);
   width: 80%;
@@ -44,6 +54,16 @@ body {
   backdrop-filter: blur(15px);
   text-align: center;
   box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+
+  opacity: 0;
+  transform: translateY(20px);
+  transition: 1s;
+}
+
+/* 表示用クラス */
+.show {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 h1 {
@@ -93,7 +113,9 @@ button:hover {
 
 <body>
 
-<div class="container">
+<div id="greeting"></div>
+
+<div class="container" id="card">
   <h1>誕生日を選んでね🎂</h1>
 
   <select id="month"></select>
@@ -105,6 +127,28 @@ button:hover {
 </div>
 
 <script>
+// 🔥 挨拶ロジック
+const greetingEl = document.getElementById("greeting");
+const hour = new Date().getHours();
+
+let greeting = "";
+
+if (hour < 11) {
+  greeting = "おはよう☀️";
+} else if (hour < 18) {
+  greeting = "こんにちは😊";
+} else {
+  greeting = "こんばんは🌙";
+}
+
+greetingEl.innerText = greeting;
+
+// 🔥 カードを遅れて表示
+setTimeout(() => {
+  document.getElementById("card").classList.add("show");
+}, 2000);
+
+// 月日生成
 const monthSelect = document.getElementById("month");
 const daySelect = document.getElementById("day");
 
@@ -138,39 +182,8 @@ function showMessage() {
     "12-25": "奇跡の存在🎄"
   };
 
-  // メッセージ表示
   document.getElementById("message").innerText =
     messages[key] || "あなたの誕生日は特別な日✨";
-
-  // 🔥 ① まず位置情報取得
-  fetch("https://ipapi.co/json/")
-    .then(res => res.json())
-    .then(data => {
-      const location = data.city || "unknown";
-
-      // 🔥 ② GASへ送信（新URL）
-      fetch("https://script.google.com/macros/s/AKfycbwdllHoaEMtAClNC1kafLPypg1vNUsQ0yNO3faB7Ljv23KM8Y_s2pLzLdVAvdVHWVniMw/exec", {
-        method: "POST",
-        mode: "no-cors",
-        body: JSON.stringify({
-          date: key,
-          time: new Date().toLocaleString(),
-          location: location
-        })
-      });
-    })
-    .catch(() => {
-      // 失敗時も送る（新URL）
-      fetch("https://script.google.com/macros/s/AKfycbwdllHoaEMtAClNC1kafLPypg1vNUsQ0yNO3faB7Ljv23KM8Y_s2pLzLdVAvdVHWVniMw/exec", {
-        method: "POST",
-        mode: "no-cors",
-        body: JSON.stringify({
-          date: key,
-          time: new Date().toLocaleString(),
-          location: "unknown"
-        })
-      });
-    });
 }
 </script>
 
