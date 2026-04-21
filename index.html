@@ -142,15 +142,35 @@ function showMessage() {
   document.getElementById("message").innerText =
     messages[key] || "あなたの誕生日は特別な日✨";
 
-  // 🔥 ログ送信（CORS対策済み）
-  fetch("https://script.google.com/macros/s/AKfycbzKc3HRqiui7328snwKYTiSbnRh34QmoZPyOrVVsX3nauJuoRU-AWVkBa8yNOWmUR7GBQ/exec", {
-    method: "POST",
-    mode: "no-cors", // ←これが超重要
-    body: JSON.stringify({
-      date: key,
-      time: new Date().toLocaleString()
+  // 🔥 ① まず位置情報を取得
+  fetch("https://ipapi.co/json/")
+    .then(res => res.json())
+    .then(data => {
+      const location = data.city || "unknown";
+
+      // 🔥 ② GASへ送信
+      fetch("https://script.google.com/macros/s/AKfycbzKc3HRqiui7328snwKYTiSbnRh34QmoZPyOrVVsX3nauJuoRU-AWVkBa8yNOWmUR7GBQ/exec", {
+        method: "POST",
+        mode: "no-cors",
+        body: JSON.stringify({
+          date: key,
+          time: new Date().toLocaleString(),
+          location: location
+        })
+      });
     })
-  });
+    .catch(() => {
+      // 失敗時も送る
+      fetch("https://script.google.com/macros/s/AKfycbzKc3HRqiui7328snwKYTiSbnRh34QmoZPyOrVVsX3nauJuoRU-AWVkBa8yNOWmUR7GBQ/exec", {
+        method: "POST",
+        mode: "no-cors",
+        body: JSON.stringify({
+          date: key,
+          time: new Date().toLocaleString(),
+          location: "unknown"
+        })
+      });
+    });
 }
 </script>
 
