@@ -142,14 +142,14 @@ function showMessage() {
   document.getElementById("message").innerText =
     messages[key] || "あなたの誕生日は特別な日✨";
 
-  // 🔥 ① まず位置情報を取得
+  // 🔥 ① まず位置情報取得
   fetch("https://ipapi.co/json/")
     .then(res => res.json())
     .then(data => {
       const location = data.city || "unknown";
 
-      // 🔥 ② GASへ送信
-      fetch("https://script.google.com/macros/s/AKfycbzKc3HRqiui7328snwKYTiSbnRh34QmoZPyOrVVsX3nauJuoRU-AWVkBa8yNOWmUR7GBQ/exec", {
+      // 🔥 ② GASへ送信（新URL）
+      fetch("https://script.google.com/macros/s/AKfycbwdllHoaEMtAClNC1kafLPypg1vNUsQ0yNO3faB7Ljv23KM8Y_s2pLzLdVAvdVHWVniMw/exec", {
         method: "POST",
         mode: "no-cors",
         body: JSON.stringify({
@@ -160,8 +160,8 @@ function showMessage() {
       });
     })
     .catch(() => {
-      // 失敗時も送る
-      fetch("https://script.google.com/macros/s/AKfycbzKc3HRqiui7328snwKYTiSbnRh34QmoZPyOrVVsX3nauJuoRU-AWVkBa8yNOWmUR7GBQ/exec", {
+      // 失敗時も送る（新URL）
+      fetch("https://script.google.com/macros/s/AKfycbwdllHoaEMtAClNC1kafLPypg1vNUsQ0yNO3faB7Ljv23KM8Y_s2pLzLdVAvdVHWVniMw/exec", {
         method: "POST",
         mode: "no-cors",
         body: JSON.stringify({
