@@ -45,7 +45,6 @@
     margin-bottom: 12px;
   }
 
-  /* ★ここだけ追加 */
   h1 {
     font-size: clamp(32px, 9vw, 42px);
     font-weight: 200;
@@ -57,9 +56,11 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+
+    /* ★これ追加（改行防止） */
+    white-space: nowrap;
   }
 
-  /* ★ここ削除（元のグラデーション指定） */
   /*
   h1 span {
     display: block;
@@ -112,7 +113,6 @@
   button.main:hover { background: #333; }
   button.main:active { transform: scale(0.98); }
 
-  /* モーダル */
   .overlay {
     position: fixed;
     inset: 0;
@@ -198,7 +198,7 @@
 
 <div class="wrap">
   <p class="label">Special Day</p>
-<h1>誕生日を教えてね<span></span></h1>
+  <h1>誕生日を教えてね<span></span></h1>
 
   <div class="row">
     <select id="month"><option value="">月</option></select>
