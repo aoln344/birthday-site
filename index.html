@@ -2,220 +2,239 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Special Day</title>
-
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,200;0,300;1,200&family=Noto+Sans+JP:wght@200;300&display=swap" rel="stylesheet">
 <style>
-body {
-  margin: 0;
-  min-height: 100vh;
-  min-height: 100dvh;
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
+  :root {
+    --bg: #f7f5f2;
+    --ink: #111;
+    --sub: #999;
+    --accent: #ff3c5f;
+    --accent2: #3c8fff;
+  }
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  body {
+    min-height: 100vh;
+    background: var(--bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'DM Sans', 'Noto Sans JP', sans-serif;
+    color: var(--ink);
+  }
 
-  font-family: Arial;
-  color: white;
-  overflow: hidden;
+  .wrap {
+    width: min(90vw, 320px);
+    opacity: 0;
+    transform: translateY(16px);
+    animation: fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.2s forwards;
+  }
+  @keyframes fadeUp {
+    to { opacity:1; transform:translateY(0); }
+  }
 
-  background: linear-gradient(270deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5);
-  background-size: 1000% 1000%;
-  animation: gradientMove 20s ease infinite;
-}
+  .label {
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.22em;
+    color: var(--sub);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
 
-@keyframes gradientMove {
-  0% {background-position:0% 50%;}
-  50% {background-position:100% 50%;}
-  100% {background-position:0% 50%;}
-}
+  h1 {
+    font-size: clamp(32px, 9vw, 42px);
+    font-weight: 200;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 40px;
+  }
+  h1 span {
+    display: block;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 
-/* キラキラ */
-body::before {
-  content: "";
-  position: absolute;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255,255,255,0.2) 1px, transparent 1px);
-  background-size: 40px 40px;
-  animation: sparkle 10s linear infinite;
-}
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
 
-@keyframes sparkle {
-  from { transform: translate(0,0);}
-  to { transform: translate(-100px,-100px);}
-}
+  select {
+    appearance: none;
+    width: 100%;
+    padding: 14px 16px;
+    background: white;
+    border: 1.5px solid #e8e8e8;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--ink);
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  select:focus { border-color: var(--accent); }
 
-/* カード */
-.container {
-  background: rgba(255,255,255,0.15);
-  backdrop-filter: blur(20px);
-  border-radius: 20px;
-  padding: 25px;
-  width: 85%;
-  max-width: 340px;
-  text-align: center;
+  button.main {
+    width: 100%;
+    margin-top: 4px;
+    padding: 15px;
+    background: var(--ink);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 300;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: background 0.25s, transform 0.15s;
+  }
+  button.main:hover { background: #333; }
+  button.main:active { transform: scale(0.98); }
 
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  /* モーダル */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    backdrop-filter: blur(6px);
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s;
+    z-index: 99;
+  }
+  .overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
 
-  opacity: 0;
-  transform: translateY(30px);
-  transition: 1s;
-}
+  .sheet {
+    width: 100%;
+    max-width: 480px;
+    background: white;
+    border-radius: 24px 24px 0 0;
+    padding: 36px 32px 48px;
+    transform: translateY(100%);
+    transition: transform 0.45s cubic-bezier(0.16,1,0.3,1);
+  }
+  .overlay.open .sheet {
+    transform: translateY(0);
+  }
 
-.container.show {
-  opacity: 1;
-  transform: translateY(0);
-}
+  .pill {
+    width: 36px; height: 4px;
+    background: #e0e0e0;
+    border-radius: 99px;
+    margin: 0 auto 28px;
+  }
 
-select, button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  border-radius: 12px;
-  border: none;
-}
+  .sheet-date {
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    color: var(--sub);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
 
-select {
-  background: rgba(255,255,255,0.85);
-}
+  .sheet-msg {
+    font-size: clamp(20px, 5.5vw, 26px);
+    font-weight: 200;
+    line-height: 1.5;
+    letter-spacing: -0.01em;
+    margin-bottom: 32px;
+    color: var(--ink);
+  }
 
-button {
-  background: linear-gradient(45deg, #ff6a00, #ff0080);
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-}
+  .dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    margin-right: 8px;
+    vertical-align: middle;
+  }
 
-button:hover {
-  transform: scale(1.05);
-}
-
-/* モーダル */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  background: rgba(0,0,0,0.5);
-  opacity: 0;
-  pointer-events: none;
-  transition: 0.3s;
-}
-
-.modal.show {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.modal-content {
-  background: white;
-  color: #333;
-  padding: 30px;
-  border-radius: 20px;
-  text-align: center;
-}
+  button.close {
+    width: 100%;
+    padding: 14px;
+    background: var(--bg);
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--sub);
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  button.close:hover { color: var(--ink); }
 </style>
 </head>
-
 <body>
 
-<div class="container" id="card">
-  <h2>誕生日を選んでね🎂</h2>
+<div class="wrap">
+  <p class="label">Special Day</p>
+  <h1>誕生日を<br><span>教えて。</span></h1>
 
-  <select id="month"></select>
-  <select id="day"></select>
-
-  <button onclick="showMessage()">メッセージを見る</button>
+  <div class="row">
+    <select id="month"><option value="">月</option></select>
+    <select id="day"><option value="">日</option></select>
+  </div>
+  <button class="main" onclick="showMessage()">メッセージを見る</button>
 </div>
 
-<div class="modal" id="modal">
-  <div class="modal-content">
-    <p id="modalMessage"></p>
-    <button onclick="closeModal()">閉じる</button>
+<div class="overlay" id="overlay" onclick="handleClick(event)">
+  <div class="sheet" id="sheet">
+    <div class="pill"></div>
+    <p class="sheet-date" id="sheetDate"></p>
+    <p class="sheet-msg"><span class="dot"></span><span id="sheetMsg"></span></p>
+    <button class="close" onclick="closeModal()">閉じる</button>
   </div>
 </div>
 
 <script>
-const card = document.getElementById("card");
-setTimeout(()=>card.classList.add("show"),500);
+const monthSel = document.getElementById("month");
+const daySel   = document.getElementById("day");
+for (let i=1;i<=12;i++) monthSel.innerHTML += `<option value="${i}">${i}月</option>`;
+for (let i=1;i<=31;i++) daySel.innerHTML   += `<option value="${i}">${i}日</option>`;
 
-const monthSelect = document.getElementById("month");
-const daySelect = document.getElementById("day");
+const messages = {
+  "1-1":  "最高のスタートの日✨",
+  "4-13": "いつも一緒にいてくれてありがとう",
+  "12-7": "あ！うそつきだ！",
+  "2-14": "愛にあふれてる日💖",
+  "7-7":  "ロマンチックな日🌟",
+  "12-25":"奇跡の存在🎄"
+};
 
-monthSelect.innerHTML = '<option value="">月</option>';
-daySelect.innerHTML = '<option value="">日</option>';
-
-for (let i=1;i<=12;i++){
-  monthSelect.innerHTML += `<option value="${i}">${i}月</option>`;
+function showMessage() {
+  const m = monthSel.value, d = daySel.value;
+  if (!m || !d) { alert("選んでね！"); return; }
+  const key = `${m}-${d}`;
+  document.getElementById("sheetDate").textContent = `${m}月 ${d}日`;
+  document.getElementById("sheetMsg").textContent = messages[key] || "あなたの誕生日は特別な日✨";
+  document.getElementById("overlay").classList.add("open");
 }
-
-for (let i=1;i<=31;i++){
-  daySelect.innerHTML += `<option value="${i}">${i}日</option>`;
+function closeModal() {
+  document.getElementById("overlay").classList.remove("open");
 }
-
-function showMessage(){
-  const m = monthSelect.value;
-  const d = daySelect.value;
-
-  if(!m || !d){
-    alert("選んでね！");
-    return;
-  }
-
-  const key = m+"-"+d;
-
-  const messages = {
-    "1-1":"最高のスタートの日✨",
-    "4-13":"いつも一緒にいてくれてありがとう",
-    "12-7":"あ！うそつきだ！",
-    "2-14":"愛にあふれてる日💖",
-    "7-7":"ロマンチックな日🌟",
-    "12-25":"奇跡の存在🎄"
-  };
-
-  const msg = messages[key] || "あなたの誕生日は特別な日✨";
-
-  document.getElementById("modalMessage").innerText = msg;
-  document.getElementById("modal").classList.add("show");
-
-  // 🔥 ログ送信（復活）
-  fetch("https://ipapi.co/json/")
-    .then(res => res.json())
-    .then(data => {
-      sendLog(key, data.city || "unknown");
-    })
-    .catch(() => {
-      sendLog(key, "unknown");
-    });
-}
-
-// ログ送信関数
-function sendLog(date, location){
-  fetch("https://script.google.com/macros/s/AKfycbwdllHoaEMtAClNC1kafLPypg1vNUsQ0yNO3faB7Ljv23KM8Ys2pLzLdVAvdVHWVniMw/exec", {
-    method: "POST",
-    mode: "no-cors",
-    body: JSON.stringify({
-      date: date,
-      time: new Date().toLocaleString(),
-      location: location
-    })
-  });
-}
-
-function closeModal(){
-  document.getElementById("modal").classList.remove("show");
+function handleClick(e) {
+  if (e.target === document.getElementById("overlay")) closeModal();
 }
 </script>
-
 </body>
 </html>
