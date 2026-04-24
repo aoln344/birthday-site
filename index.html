@@ -45,13 +45,22 @@
     margin-bottom: 12px;
   }
 
+  /* ★ここだけ追加 */
   h1 {
     font-size: clamp(32px, 9vw, 42px);
     font-weight: 200;
     line-height: 1.15;
     letter-spacing: -0.02em;
     margin-bottom: 40px;
+
+    background: linear-gradient(90deg, #ff4d6d, #8a5cff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
+
+  /* ★ここ削除（元のグラデーション指定） */
+  /*
   h1 span {
     display: block;
     background: linear-gradient(90deg, var(--accent), var(--accent2));
@@ -59,6 +68,7 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+  */
 
   .row {
     display: grid;
