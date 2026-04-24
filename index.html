@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Special Day</title>
 
 <style>
@@ -13,204 +12,171 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: 'Arial', sans-serif;
+  font-family: Arial;
   color: white;
+  overflow: hidden;
 
-  background: linear-gradient(
-    270deg,
-    #feda75,
-    #fa7e1e,
-    #d62976,
-    #962fbf,
-    #4f5bd5
-  );
-
+  background: linear-gradient(270deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5);
   background-size: 1000% 1000%;
   animation: gradientMove 20s ease infinite;
 }
 
 @keyframes gradientMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {background-position:0% 50%;}
+  50% {background-position:100% 50%;}
+  100% {background-position:0% 50%;}
 }
 
-/* 挨拶 */
-#greeting {
+/* キラキラ */
+body::before {
+  content: "";
   position: absolute;
-  font-size: 6vw;
-  opacity: 0;
-  transition: 1s;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.2) 1px, transparent 1px);
+  background-size: 40px 40px;
+  animation: sparkle 10s linear infinite;
+}
+
+@keyframes sparkle {
+  from { transform: translate(0,0);}
+  to { transform: translate(-100px,-100px);}
 }
 
 /* カード */
 .container {
-  background: rgba(255,255,255,0.2);
-  width: 80%;
-  max-width: 320px;
-  padding: 20px;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(20px);
   border-radius: 20px;
-  backdrop-filter: blur(15px);
+  padding: 25px;
+  width: 85%;
+  max-width: 340px;
   text-align: center;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.25);
 
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
   opacity: 0;
+  transform: translateY(30px);
   transition: 1s;
 }
 
-.show {
+.container.show {
   opacity: 1;
-}
-
-h1 {
-  font-size: 5vw;
-  margin-bottom: 20px;
+  transform: translateY(0);
 }
 
 select, button {
   width: 100%;
   padding: 12px;
   margin-top: 10px;
-  border: none;
   border-radius: 12px;
-  font-size: 4vw;
+  border: none;
 }
 
 button {
-  background: white;
-  color: #d62976;
+  background: linear-gradient(45deg, #ff6a00, #ff0080);
+  color: white;
   font-weight: bold;
   cursor: pointer;
-  transition: 0.3s;
 }
 
 button:hover {
   transform: scale(1.05);
 }
 
-#message {
-  margin-top: 20px;
-  font-size: 4.5vw;
+/* モーダル */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: rgba(0,0,0,0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.3s;
 }
 
-@media (min-width: 768px) {
-  h1 { font-size: 24px; }
-  select, button { font-size: 16px; }
-  #message { font-size: 18px; }
+.modal.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-content {
+  background: white;
+  color: #333;
+  padding: 30px;
+  border-radius: 20px;
+  text-align: center;
 }
 </style>
 </head>
 
 <body>
 
-<div id="greeting"></div>
-
 <div class="container" id="card">
-  <h1>誕生日を選んでね🎂</h1>
-
+  <h2>誕生日を選んでね🎂</h2>
   <select id="month"></select>
   <select id="day"></select>
-
   <button onclick="showMessage()">メッセージを見る</button>
+</div>
 
-  <div id="message"></div>
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <p id="modalMessage"></p>
+    <button onclick="closeModal()">閉じる</button>
+  </div>
 </div>
 
 <script>
-// 🔥 挨拶ロジック（修正）
-const greetingEl = document.getElementById("greeting");
-const hour = new Date().getHours();
+const card = document.getElementById("card");
+setTimeout(()=>card.classList.add("show"),500);
 
-let greeting = "";
-
-if (hour >= 5 && hour <= 10) {
-  greeting = "おはよう☀️";
-} else if (hour >= 11 && hour <= 17) {
-  greeting = "こんにちは😊";
-} else {
-  greeting = "こんばんは🌙";
-}
-
-greetingEl.innerText = greeting;
-
-// フェードイン
-setTimeout(() => {
-  greetingEl.style.opacity = 1;
-}, 100);
-
-// フェードアウト → カード表示
-setTimeout(() => {
-  greetingEl.style.opacity = 0;
-  document.getElementById("card").classList.add("show");
-}, 4000);
-
-
-// 月日生成
 const monthSelect = document.getElementById("month");
 const daySelect = document.getElementById("day");
 
 monthSelect.innerHTML = '<option value="">月</option>';
 daySelect.innerHTML = '<option value="">日</option>';
 
-for (let i = 1; i <= 12; i++) {
+for (let i=1;i<=12;i++){
   monthSelect.innerHTML += `<option value="${i}">${i}月</option>`;
 }
 
-for (let i = 1; i <= 31; i++) {
+for (let i=1;i<=31;i++){
   daySelect.innerHTML += `<option value="${i}">${i}日</option>`;
 }
 
-
-// 🔥 メイン処理（ログそのまま）
-function showMessage() {
+function showMessage(){
   const m = monthSelect.value;
   const d = daySelect.value;
 
-  if (!m || !d) {
+  if(!m || !d){
     alert("選んでね！");
     return;
   }
 
-  const key = m + "-" + d;
+  const key = m+"-"+d;
 
   const messages = {
-    "1-1": "最高のスタートの日✨",
-    "4-13": "いつも一緒にいてくれてありがとう",
-    "12-7": "あ！うそつきだ！",
-    "2-14": "愛にあふれてる日💖",
-    "7-7": "ロマンチックな日🌟",
-    "12-25": "奇跡の存在🎄"
+    "1-1":"最高のスタートの日✨",
+    "4-13":"いつも一緒にいてくれてありがとう",
+    "12-7":"あ！うそつきだ！",
+    "2-14":"愛にあふれてる日💖",
+    "7-7":"ロマンチックな日🌟",
+    "12-25":"奇跡の存在🎄"
   };
 
-  document.getElementById("message").innerText =
-    messages[key] || "あなたの誕生日は特別な日✨";
+  const msg = messages[key] || "あなたの誕生日は特別な日✨";
 
-  fetch("https://ipapi.co/json/")
-    .then(res => res.json())
-    .then(data => {
-      const location = data.city || "unknown";
+  document.getElementById("modalMessage").innerText = msg;
+  document.getElementById("modal").classList.add("show");
+}
 
-      fetch("https://script.google.com/macros/s/AKfycbwdllHoaEMtAClNC1kafLPypg1vNUsQ0yNO3faB7Ljv23KM8Y_s2pLzLdVAvdVHWVniMw/exec", {
-        method: "POST",
-        mode: "no-cors",
-        body: JSON.stringify({
-          date: key,
-          time: new Date().toLocaleString(),
-          location: location
-        })
-      });
-    })
-    .catch(() => {
-      fetch("https://script.google.com/macros/s/AKfycbwdllHoaEMtAClNC1kafLPypg1vNUsQ0yNO3faB7Ljv23KM8Y_s2pLzLdVAvdVHWVniMw/exec", {
-        method: "POST",
-        mode: "no-cors",
-        body: JSON.stringify({
-          date: key,
-          time: new Date().toLocaleString(),
-          location: "unknown"
-        })
-      });
-    });
+function closeModal(){
+  document.getElementById("modal").classList.remove("show");
 }
 </script>
 
