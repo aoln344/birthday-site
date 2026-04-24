@@ -2,16 +2,22 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Special Day</title>
 
 <style>
 body {
   margin: 0;
-  height: 100vh;
+  min-height: 100vh;
+  min-height: 100dvh;
+
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+
   display: flex;
   justify-content: center;
   align-items: center;
+
   font-family: Arial;
   color: white;
   overflow: hidden;
@@ -54,6 +60,7 @@ body::before {
   text-align: center;
 
   box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+
   opacity: 0;
   transform: translateY(30px);
   transition: 1s;
@@ -70,6 +77,10 @@ select, button {
   margin-top: 10px;
   border-radius: 12px;
   border: none;
+}
+
+select {
+  background: rgba(255,255,255,0.85);
 }
 
 button {
@@ -90,6 +101,7 @@ button:hover {
   left: 0;
   width: 100%;
   height: 100%;
+
   display: flex;
   justify-content: center;
   align-items: center;
@@ -119,8 +131,10 @@ button:hover {
 
 <div class="container" id="card">
   <h2>誕生日を選んでね🎂</h2>
+
   <select id="month"></select>
   <select id="day"></select>
+
   <button onclick="showMessage()">メッセージを見る</button>
 </div>
 
@@ -173,6 +187,29 @@ function showMessage(){
 
   document.getElementById("modalMessage").innerText = msg;
   document.getElementById("modal").classList.add("show");
+
+  // 🔥 ログ送信（復活）
+  fetch("https://ipapi.co/json/")
+    .then(res => res.json())
+    .then(data => {
+      sendLog(key, data.city || "unknown");
+    })
+    .catch(() => {
+      sendLog(key, "unknown");
+    });
+}
+
+// ログ送信関数
+function sendLog(date, location){
+  fetch("https://script.google.com/macros/s/AKfycbwdllHoaEMtAClNC1kafLPypg1vNUsQ0yNO3faB7Ljv23KM8Ys2pLzLdVAvdVHWVniMw/exec", {
+    method: "POST",
+    mode: "no-cors",
+    body: JSON.stringify({
+      date: date,
+      time: new Date().toLocaleString(),
+      location: location
+    })
+  });
 }
 
 function closeModal(){
