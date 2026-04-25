@@ -4,21 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Special Day</title>
-
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,200;0,300;1,200&family=Noto+Sans+JP:wght@200;300&display=swap" rel="stylesheet">
-
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 :root {
   --bg: #f7f5f2;
   --ink: #111;
   --sub: #999;
-  --accent: #ff3c5f;
-  --accent2: #3c8fff;
-  --line:#d8d6d2;
+  --accent: #ff4d6d;
+  --accent2: #8a5cff;
+  --line: #d8d6d2;
 }
-
 body {
   min-height: 100vh;
   background: var(--bg);
@@ -27,188 +23,194 @@ body {
   align-items: center;
   font-family: 'DM Sans', 'Noto Sans JP', sans-serif;
   color: var(--ink);
+  overflow: hidden;
 }
 
-/* ===== 元UI（完全維持） ===== */
+/* ── メインUI ── */
 .wrap {
   width: min(90vw, 320px);
   opacity: 0;
   transform: translateY(16px);
   animation: fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.2s forwards;
 }
-
-@keyframes fadeUp {
-  to { opacity:1; transform:translateY(0); }
-}
-
+@keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
 .label {
-  font-size: 11px;
-  font-weight: 300;
-  letter-spacing: 0.22em;
-  color: var(--sub);
-  text-transform: uppercase;
-  margin-bottom: 12px;
+  font-size: 11px; font-weight: 300;
+  letter-spacing: 0.22em; color: var(--sub);
+  text-transform: uppercase; margin-bottom: 12px;
 }
-
 h1 {
   font-size: clamp(18px, 4.5vw, 42px);
-  font-weight: 200;
-  line-height: 1.25;
-  letter-spacing: -0.02em;
-  margin-bottom: 40px;
+  font-weight: 200; line-height: 1.25;
+  letter-spacing: -0.02em; margin-bottom: 40px;
   background: linear-gradient(90deg, #ff4d6d, #8a5cff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; white-space: nowrap;
+}
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+select {
+  appearance: none; width: 100%;
+  padding: 14px 16px; background: white;
+  border: 1.5px solid var(--line); border-radius: 10px;
+  font-family: inherit; font-size: 15px; font-weight: 300;
+  color: var(--ink); cursor: pointer; outline: none;
+  transition: border-color 0.2s;
+}
+select:focus { border-color: var(--accent); }
+button.main {
+  width: 100%; margin-top: 4px; padding: 15px;
+  background: var(--ink); color: white; border: none;
+  border-radius: 10px; font-family: inherit; font-size: 14px;
+  font-weight: 300; letter-spacing: 0.06em;
+  cursor: pointer; transition: background 0.25s, transform 0.15s;
+}
+button.main:hover { background: #333; }
+button.main:active { transform: scale(0.98); }
+
+/* ── ステージ ── */
+#stage {
+  position: fixed; inset: 0; z-index: 100;
+  display: flex; justify-content: center; align-items: center;
+  flex-direction: column; gap: 48px;
+  opacity: 0; pointer-events: none; transition: opacity 0.4s;
+}
+#stage.active { opacity: 1; pointer-events: auto; }
+#stageBg {
+  position: absolute; inset: 0;
+  background: rgba(247,245,242,0.94);
+  backdrop-filter: blur(10px);
+}
+
+/* ── シーン ── */
+#scene {
+  position: relative;
+  z-index: 10;
+  /* 封筒160×110、フラップが上に開くと最大70px飛び出す */
+  width: 240px;
+  height: 360px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(-40px);
+  transition: opacity 0.6s ease, transform 0.7s cubic-bezier(0.16,1,0.3,1);
+}
+#scene.drop { opacity:1; transform:translateY(0); }
+
+/* ── 封筒ボディ（Canvas SVG） ── */
+/*
+  封筒の構造（viewBox 240×160）:
+  - 本体: rect (0,0,240,160)
+  - 底V字: 左下→中央上→右下
+  - 左右折り線: 左上→中央→左下、右上→中央→右下
+  - 上辺フラップ: 閉じてるとき 左上→中央下→右上（下向き三角）
+                  開くと上に180度回転して 上向き三角になる
+*/
+
+#env-body {
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 240px; height: 160px;
+  z-index: 2;
+  overflow: visible;
+  filter: drop-shadow(0 8px 24px rgba(0,0,0,0.08));
+}
+
+/* フラップのラッパー：transform-originを上辺中央に */
+#flap-wrap {
+  position: absolute;
+  /* 封筒上辺 = bottom:140px */
+  bottom: 160px;
+  left: 0;
+  width: 240px;
+  height: 90px; /* フラップの深さ */
+  z-index: 3; /* 閉じてるとき封筒の上 */
+  transform-origin: center bottom; /* 上辺中央（封筒との境界）を軸に回転 */
+  transform: rotateX(0deg);
+  transition: transform 0.7s cubic-bezier(0.4,0,0.2,1);
+  /* perspective は親から継承 */
+}
+#scene { perspective: 800px; }
+
+#flap-wrap.open {
+  transform: rotateX(-180deg); /* 上に折り返す */
+  z-index: 1; /* 開いたらカード・封筒の後ろ */
+}
+
+#flap-wrap svg {
+  width: 240px; height: 90px;
+  overflow: visible;
+}
+
+/* ── カード ── */
+#card {
+  position: absolute;
+  left: 24px;
+  width: 192px;
+  background: white;
+  border: 1px solid #e8e6e2;
+  border-radius: 6px;
+  padding: 20px 18px 18px;
+  text-align: center;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  z-index: 4; /* 常に最前面 */
+  bottom: 8px;
+  opacity: 0;
+  transition: bottom 0.75s cubic-bezier(0.16,1,0.3,1), opacity 0.5s ease;
+}
+#card.rise {
+  bottom: 185px;
+  opacity: 1;
+}
+
+.card-date {
+  font-size: 10px; font-weight: 300;
+  letter-spacing: 0.2em; color: var(--sub);
+  text-transform: uppercase; margin-bottom: 8px;
+}
+.card-line {
+  width: 24px; height: 1px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  margin: 0 auto 10px;
+}
+.card-msg {
+  font-size: 13px; font-weight: 300;
+  line-height: 1.7; color: var(--ink);
+  letter-spacing: 0.03em;
+}
+
+/* ── closeボタン ── */
+#closeBtn {
+  position: relative; z-index: 20;
+  background: transparent;
+  border: 1px solid var(--line); border-radius: 99px;
+  padding: 10px 32px;
+  font-family: inherit; font-size: 12px;
+  font-weight: 300; letter-spacing: 0.14em;
+  color: var(--sub); cursor: pointer;
+  opacity: 0; transition: opacity 0.4s, color 0.2s, border-color 0.2s;
   white-space: nowrap;
 }
+#closeBtn.show { opacity: 1; }
+#closeBtn:hover { color: var(--ink); border-color: var(--ink); }
 
-.row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 10px;
+/* キラキラ */
+.spark {
+  position: fixed; z-index: 300;
+  pointer-events: none; border-radius: 50%;
+  animation: sparkFly var(--dur) ease-out forwards;
 }
-
-select {
-  appearance: none;
-  width: 100%;
-  padding: 14px 16px;
-  background: white;
-  border: 1.5px solid #e8e8e8;
-  border-radius: 10px;
-  font-family: inherit;
-}
-
-button.main {
-  width: 100%;
-  margin-top: 4px;
-  padding: 15px;
-  background: var(--ink);
-  color: white;
-  border: none;
-  border-radius: 10px;
-}
-
-/* ===== overlay（元のまま） ===== */
-.overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.35);
-  backdrop-filter: blur(6px);
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.35s;
-  z-index: 99;
-}
-.overlay.open {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* ===== 封筒シーン追加 ===== */
-.scene {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width:240px;
-  height:300px;
-  pointer-events:none;
-}
-
-/* 封筒 */
-.env {
-  position:absolute;
-  bottom:0;
-  width:240px;
-  height:160px;
-  background:white;
-  border:1px solid var(--line);
-}
-
-/* フラップ */
-.flap {
-  position:absolute;
-  bottom:160px;
-  width:240px;
-  height:90px;
-  transform-origin:50% 0%;
-  transition:0.7s cubic-bezier(0.22,1,0.36,1);
-}
-
-.flap.open {
-  transform:rotateX(-170deg);
-}
-
-/* カード */
-.card {
-  position:absolute;
-  bottom:10px;
-  left:24px;
-  width:192px;
-  background:white;
-  border-radius:6px;
-  padding:16px;
-  opacity:0;
-  transition:0.7s cubic-bezier(0.16,1,0.3,1);
-}
-
-.card.rise {
-  bottom:140px;
-  opacity:1;
-}
-
-/* ===== sheet（完全維持） ===== */
-.sheet {
-  width: 100%;
-  max-width: 480px;
-  background: white;
-  border-radius: 24px 24px 0 0;
-  padding: 36px 32px 48px;
-  transform: translateY(100%);
-  transition: transform 0.45s cubic-bezier(0.16,1,0.3,1);
-  z-index: 2;
-}
-.overlay.open.showSheet .sheet {
-  transform: translateY(0);
-}
-
-.pill {
-  width: 36px; height: 4px;
-  background: #e0e0e0;
-  border-radius: 99px;
-  margin: 0 auto 28px;
-}
-
-.sheet-date {
-  font-size: 12px;
-  letter-spacing: 0.18em;
-  color: var(--sub);
-  margin-bottom: 10px;
-}
-
-.sheet-msg {
-  font-size: clamp(20px, 5.5vw, 26px);
-  margin-bottom: 32px;
-}
-
-button.close {
-  width: 100%;
-  padding: 14px;
-  background: var(--bg);
-  border-radius: 10px;
+@keyframes sparkFly {
+  0%   { opacity:1; transform: translate(0,0) scale(1); }
+  100% { opacity:0; transform: translate(var(--tx),var(--ty)) scale(0.2); }
 }
 </style>
 </head>
-
 <body>
 
 <div class="wrap">
   <p class="label">Special Day</p>
   <h1>誕生日をおしえてね</h1>
-
   <div class="row">
     <select id="month"><option value="">月</option></select>
     <select id="day"><option value="">日</option></select>
@@ -216,38 +218,64 @@ button.close {
   <button class="main" onclick="showMessage()">メッセージを見る</button>
 </div>
 
-<div class="overlay" id="overlay" onclick="handleClick(event)">
+<div id="stage">
+  <div id="stageBg"></div>
 
-  <!-- 封筒 -->
-  <div class="scene">
-    <div class="flap" id="flap">
-      <svg viewBox="0 0 240 90">
-        <path d="M0,0 L120,75 L240,0 Z" fill="#eae8e4"/>
+  <div id="scene">
+
+    <!--
+      フラップ
+      閉じてるとき: 下向き三角（左上→中央下→右上）が封筒の上半分を覆う
+      開くとき: transform-origin=下辺（封筒上辺）で rotateX(-180deg) → 上に折り返す
+      z=3（閉）→ z=1（開）でカードの下に潜る
+    -->
+    <div id="flap-wrap">
+      <svg viewBox="0 0 240 90" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <!-- フラップ面: 上辺全体 → 中央下点 -->
+        <path d="M0,0 L240,0 L120,82 Z" fill="#eae8e4"/>
+        <!-- フラップ下辺の線（Vの字） -->
+        <polyline points="0,0 120,82 240,0"
+                  fill="none" stroke="#d8d6d2" stroke-width="1.2" stroke-linejoin="round"/>
+        <!-- フラップ上辺=封筒との境界線 -->
+        <line x1="0" y1="0" x2="240" y2="0" stroke="#d8d6d2" stroke-width="1.2"/>
       </svg>
     </div>
 
-    <div class="card" id="card">
-      <div id="cardDate"></div>
-      <div id="cardMsg"></div>
+    <!-- カード z=4 -->
+    <div id="card">
+      <p class="card-date" id="cardDate"></p>
+      <div class="card-line"></div>
+      <p class="card-msg" id="cardMsg"></p>
     </div>
 
-    <div class="env"></div>
+    <!-- 封筒ボディ z=2 -->
+    <svg id="env-body" viewBox="0 0 240 160" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+      <!-- 白塗り -->
+      <rect x="0" y="0" width="240" height="160" rx="4" fill="white"/>
+      <!-- 輪郭 -->
+      <rect x="0" y="0" width="240" height="160" rx="4"
+            fill="none" stroke="#d8d6d2" stroke-width="1.2"/>
+      <!-- 底のV字折り線 -->
+      <polyline points="0,160 120,95 240,160"
+                fill="none" stroke="#d8d6d2" stroke-width="1.2"/>
+      <!-- 左の折り線（左上→中央） -->
+      <line x1="0" y1="0" x2="120" y2="75"
+            stroke="#d8d6d2" stroke-width="1.2"/>
+      <!-- 右の折り線（右上→中央） -->
+      <line x1="240" y1="0" x2="120" y2="75"
+            stroke="#d8d6d2" stroke-width="1.2"/>
+      <!-- 上辺（フラップが開いたときの境界線） -->
+      <line x1="0" y1="0" x2="240" y2="0" stroke="#d8d6d2" stroke-width="1.2"/>
+    </svg>
+
   </div>
 
-  <!-- 元sheet -->
-  <div class="sheet" id="sheet">
-    <div class="pill"></div>
-    <p class="sheet-date" id="sheetDate"></p>
-    <p class="sheet-msg"><span id="sheetMsg"></span></p>
-    <button class="close" onclick="closeModal()">閉じる</button>
-  </div>
-
+  <button id="closeBtn" onclick="closeStage()">close</button>
 </div>
 
 <script>
 const monthSel = document.getElementById("month");
 const daySel   = document.getElementById("day");
-
 for (let i=1;i<=12;i++) monthSel.innerHTML += `<option value="${i}">${i}月</option>`;
 for (let i=1;i<=31;i++) daySel.innerHTML   += `<option value="${i}">${i}日</option>`;
 
@@ -263,43 +291,93 @@ const messages = {
 function showMessage() {
   const m = monthSel.value, d = daySel.value;
   if (!m || !d) { alert("入力忘れてるよん🙃"); return; }
-
   const key = `${m}-${d}`;
-  const message = messages[key] || "あなたの誕生日は特別な日✨";
-
-  // 元仕様
-  document.getElementById("sheetDate").textContent = `${m}月 ${d}日`;
-  document.getElementById("sheetMsg").textContent  = message;
-
-  // 封筒用
   document.getElementById("cardDate").textContent = `${m}月 ${d}日`;
-  document.getElementById("cardMsg").textContent  = message;
-
-  const overlay = document.getElementById("overlay");
-  const flap    = document.getElementById("flap");
-  const card    = document.getElementById("card");
-
-  overlay.classList.add("open");
-
-  setTimeout(()=>flap.classList.add("open"),400);
-  setTimeout(()=>card.classList.add("rise"),1100);
-  setTimeout(()=>overlay.classList.add("showSheet"),1800);
+  document.getElementById("cardMsg").textContent  = messages[key] || "あなたの誕生日は特別な日✨";
+  runAnim();
 }
 
-function closeModal() {
-  const overlay = document.getElementById("overlay");
-  const flap    = document.getElementById("flap");
-  const card    = document.getElementById("card");
+function runAnim() {
+  const stage    = document.getElementById("stage");
+  const scene    = document.getElementById("scene");
+  const flap     = document.getElementById("flap-wrap");
+  const card     = document.getElementById("card");
+  const closeBtn = document.getElementById("closeBtn");
 
-  overlay.classList.remove("open","showSheet");
+  // リセット
+  scene.classList.remove("drop");
   flap.classList.remove("open");
   card.classList.remove("rise");
+  card.style.transition = "none";
+  closeBtn.classList.remove("show");
+  void scene.offsetWidth;
+
+  stage.classList.add("active");
+
+  setTimeout(() => {
+    card.style.transition = "";
+    scene.classList.add("drop");
+  }, 80);
+
+  // フラップ開く
+  setTimeout(() => flap.classList.add("open"), 900);
+
+  // カード浮上
+  setTimeout(() => {
+    card.classList.add("rise");
+    spawnSparks();
+  }, 1600);
+
+  setTimeout(() => closeBtn.classList.add("show"), 2300);
 }
 
-function handleClick(e) {
-  if (e.target === document.getElementById("overlay")) closeModal();
+function closeStage() {
+  const stage    = document.getElementById("stage");
+  const scene    = document.getElementById("scene");
+  const flap     = document.getElementById("flap-wrap");
+  const card     = document.getElementById("card");
+  const closeBtn = document.getElementById("closeBtn");
+
+  closeBtn.classList.remove("show");
+  card.classList.remove("rise");
+  setTimeout(() => flap.classList.remove("open"), 400);
+  setTimeout(() => {
+    scene.style.transition = "opacity 0.4s, transform 0.4s";
+    scene.style.opacity = "0";
+    scene.style.transform = "translateY(20px)";
+  }, 800);
+  setTimeout(() => {
+    stage.classList.remove("active");
+    scene.style.transition = "";
+    scene.style.opacity    = "";
+    scene.style.transform  = "";
+  }, 1100);
+}
+
+function spawnSparks() {
+  const colors = ["#ff4d6d","#8a5cff","#ffcc44","#3c8fff","#fff"];
+  const rect = document.getElementById("env-body").getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top  + rect.height / 2;
+  for (let i = 0; i < 22; i++) {
+    const el = document.createElement("div");
+    el.className = "spark";
+    const size  = 3 + Math.random() * 4;
+    const angle = Math.random() * Math.PI * 2;
+    const dist  = 60 + Math.random() * 110;
+    el.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${cx}px; top:${cy}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      --tx:${Math.cos(angle)*dist}px;
+      --ty:${Math.sin(angle)*dist}px;
+      --dur:${0.5+Math.random()*0.6}s;
+      animation-delay:${Math.random()*0.15}s;
+    `;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1200);
+  }
 }
 </script>
-
 </body>
 </html>
