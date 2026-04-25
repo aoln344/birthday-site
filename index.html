@@ -235,7 +235,7 @@ const messages = {
 
 function showMessage() {
   const m = monthSel.value, d = daySel.value;
-  if (!m || !d) { alert("入力忘れてるよん"); return; }
+  if (!m || !d) { alert("入力忘れてるよん🙃"); return; }
   const key = `${m}-${d}`;
   document.getElementById("sheetDate").textContent = `${m}月 ${d}日`;
   document.getElementById("sheetMsg").textContent = messages[key] || "あなたの誕生日は特別な日✨";
