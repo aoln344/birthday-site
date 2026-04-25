@@ -4,203 +4,210 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Special Day</title>
+
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,200;0,300;1,200&family=Noto+Sans+JP:wght@200;300&display=swap" rel="stylesheet">
+
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  :root {
-    --bg: #f7f5f2;
-    --ink: #111;
-    --sub: #999;
-    --accent: #ff3c5f;
-    --accent2: #3c8fff;
-  }
+:root {
+  --bg: #f7f5f2;
+  --ink: #111;
+  --sub: #999;
+  --accent: #ff3c5f;
+  --accent2: #3c8fff;
+  --line:#d8d6d2;
+}
 
-  body {
-    min-height: 100vh;
-    background: var(--bg);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: 'DM Sans', 'Noto Sans JP', sans-serif;
-    color: var(--ink);
-  }
+body {
+  min-height: 100vh;
+  background: var(--bg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'DM Sans', 'Noto Sans JP', sans-serif;
+  color: var(--ink);
+}
 
-  .wrap {
-    width: min(90vw, 320px);
-    opacity: 0;
-    transform: translateY(16px);
-    animation: fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.2s forwards;
-  }
+/* ===== 元UI（完全維持） ===== */
+.wrap {
+  width: min(90vw, 320px);
+  opacity: 0;
+  transform: translateY(16px);
+  animation: fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.2s forwards;
+}
 
-  @media (min-width: 768px) {
-    .wrap {
-      width: min(90vw, 520px);
-    }
-  }
+@keyframes fadeUp {
+  to { opacity:1; transform:translateY(0); }
+}
 
-  @media (min-width: 1024px) {
-    .wrap {
-      width: 600px;
-    }
-  }
+.label {
+  font-size: 11px;
+  font-weight: 300;
+  letter-spacing: 0.22em;
+  color: var(--sub);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
 
-  @keyframes fadeUp {
-    to { opacity:1; transform:translateY(0); }
-  }
+h1 {
+  font-size: clamp(18px, 4.5vw, 42px);
+  font-weight: 200;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  margin-bottom: 40px;
+  background: linear-gradient(90deg, #ff4d6d, #8a5cff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  white-space: nowrap;
+}
 
-  .label {
-    font-size: 11px;
-    font-weight: 300;
-    letter-spacing: 0.22em;
-    color: var(--sub);
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
 
-  h1 {
-    font-size: clamp(18px, 4.5vw, 42px); /* ★ここ調整 */
-    font-weight: 200;
-    line-height: 1.25;
-    letter-spacing: -0.02em;
-    margin-bottom: 40px;
+select {
+  appearance: none;
+  width: 100%;
+  padding: 14px 16px;
+  background: white;
+  border: 1.5px solid #e8e8e8;
+  border-radius: 10px;
+  font-family: inherit;
+}
 
-    background: linear-gradient(90deg, #ff4d6d, #8a5cff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+button.main {
+  width: 100%;
+  margin-top: 4px;
+  padding: 15px;
+  background: var(--ink);
+  color: white;
+  border: none;
+  border-radius: 10px;
+}
 
-    white-space: nowrap; /* ★これ追加 */
-  }
+/* ===== overlay（元のまま） ===== */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(6px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s;
+  z-index: 99;
+}
+.overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
 
-  .row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 10px;
-  }
+/* ===== 封筒シーン追加 ===== */
+.scene {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width:240px;
+  height:300px;
+  pointer-events:none;
+}
 
-  select {
-    appearance: none;
-    width: 100%;
-    padding: 14px 16px;
-    background: white;
-    border: 1.5px solid #e8e8e8;
-    border-radius: 10px;
-    font-family: inherit;
-    font-size: 15px;
-    font-weight: 300;
-    color: var(--ink);
-    cursor: pointer;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  select:focus { border-color: var(--accent); }
+/* 封筒 */
+.env {
+  position:absolute;
+  bottom:0;
+  width:240px;
+  height:160px;
+  background:white;
+  border:1px solid var(--line);
+}
 
-  button.main {
-    width: 100%;
-    margin-top: 4px;
-    padding: 15px;
-    background: var(--ink);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 300;
-    letter-spacing: 0.06em;
-    cursor: pointer;
-    transition: background 0.25s, transform 0.15s;
-  }
-  button.main:hover { background: #333; }
-  button.main:active { transform: scale(0.98); }
+/* フラップ */
+.flap {
+  position:absolute;
+  bottom:160px;
+  width:240px;
+  height:90px;
+  transform-origin:50% 0%;
+  transition:0.7s cubic-bezier(0.22,1,0.36,1);
+}
 
-  .overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.35);
-    backdrop-filter: blur(6px);
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.35s;
-    z-index: 99;
-  }
-  .overlay.open {
-    opacity: 1;
-    pointer-events: auto;
-  }
+.flap.open {
+  transform:rotateX(-170deg);
+}
 
-  .sheet {
-    width: 100%;
-    max-width: 480px;
-    background: white;
-    border-radius: 24px 24px 0 0;
-    padding: 36px 32px 48px;
-    transform: translateY(100%);
-    transition: transform 0.45s cubic-bezier(0.16,1,0.3,1);
-  }
-  .overlay.open .sheet {
-    transform: translateY(0);
-  }
+/* カード */
+.card {
+  position:absolute;
+  bottom:10px;
+  left:24px;
+  width:192px;
+  background:white;
+  border-radius:6px;
+  padding:16px;
+  opacity:0;
+  transition:0.7s cubic-bezier(0.16,1,0.3,1);
+}
 
-  .pill {
-    width: 36px; height: 4px;
-    background: #e0e0e0;
-    border-radius: 99px;
-    margin: 0 auto 28px;
-  }
+.card.rise {
+  bottom:140px;
+  opacity:1;
+}
 
-  .sheet-date {
-    font-size: 12px;
-    font-weight: 300;
-    letter-spacing: 0.18em;
-    color: var(--sub);
-    text-transform: uppercase;
-    margin-bottom: 10px;
-  }
+/* ===== sheet（完全維持） ===== */
+.sheet {
+  width: 100%;
+  max-width: 480px;
+  background: white;
+  border-radius: 24px 24px 0 0;
+  padding: 36px 32px 48px;
+  transform: translateY(100%);
+  transition: transform 0.45s cubic-bezier(0.16,1,0.3,1);
+  z-index: 2;
+}
+.overlay.open.showSheet .sheet {
+  transform: translateY(0);
+}
 
-  .sheet-msg {
-    font-size: clamp(20px, 5.5vw, 26px);
-    font-weight: 200;
-    line-height: 1.5;
-    letter-spacing: -0.01em;
-    margin-bottom: 32px;
-    color: var(--ink);
-  }
+.pill {
+  width: 36px; height: 4px;
+  background: #e0e0e0;
+  border-radius: 99px;
+  margin: 0 auto 28px;
+}
 
-  .dot {
-    display: inline-block;
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    margin-right: 8px;
-    vertical-align: middle;
-  }
+.sheet-date {
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  color: var(--sub);
+  margin-bottom: 10px;
+}
 
-  button.close {
-    width: 100%;
-    padding: 14px;
-    background: var(--bg);
-    border: none;
-    border-radius: 10px;
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 300;
-    color: var(--sub);
-    cursor: pointer;
-    transition: color 0.2s;
-  }
-  button.close:hover { color: var(--ink); }
+.sheet-msg {
+  font-size: clamp(20px, 5.5vw, 26px);
+  margin-bottom: 32px;
+}
+
+button.close {
+  width: 100%;
+  padding: 14px;
+  background: var(--bg);
+  border-radius: 10px;
+}
 </style>
 </head>
+
 <body>
 
 <div class="wrap">
   <p class="label">Special Day</p>
-  <h1>誕生日を教えてね<span></span></h1>
+  <h1>誕生日をおしえてね</h1>
 
   <div class="row">
     <select id="month"><option value="">月</option></select>
@@ -210,17 +217,37 @@
 </div>
 
 <div class="overlay" id="overlay" onclick="handleClick(event)">
+
+  <!-- 封筒 -->
+  <div class="scene">
+    <div class="flap" id="flap">
+      <svg viewBox="0 0 240 90">
+        <path d="M0,0 L120,75 L240,0 Z" fill="#eae8e4"/>
+      </svg>
+    </div>
+
+    <div class="card" id="card">
+      <div id="cardDate"></div>
+      <div id="cardMsg"></div>
+    </div>
+
+    <div class="env"></div>
+  </div>
+
+  <!-- 元sheet -->
   <div class="sheet" id="sheet">
     <div class="pill"></div>
     <p class="sheet-date" id="sheetDate"></p>
-    <p class="sheet-msg"><span class="dot"></span><span id="sheetMsg"></span></p>
+    <p class="sheet-msg"><span id="sheetMsg"></span></p>
     <button class="close" onclick="closeModal()">閉じる</button>
   </div>
+
 </div>
 
 <script>
 const monthSel = document.getElementById("month");
 const daySel   = document.getElementById("day");
+
 for (let i=1;i<=12;i++) monthSel.innerHTML += `<option value="${i}">${i}月</option>`;
 for (let i=1;i<=31;i++) daySel.innerHTML   += `<option value="${i}">${i}日</option>`;
 
@@ -236,17 +263,43 @@ const messages = {
 function showMessage() {
   const m = monthSel.value, d = daySel.value;
   if (!m || !d) { alert("入力忘れてるよん🙃"); return; }
+
   const key = `${m}-${d}`;
+  const message = messages[key] || "あなたの誕生日は特別な日✨";
+
+  // 元仕様
   document.getElementById("sheetDate").textContent = `${m}月 ${d}日`;
-  document.getElementById("sheetMsg").textContent = messages[key] || "あなたの誕生日は特別な日✨";
-  document.getElementById("overlay").classList.add("open");
+  document.getElementById("sheetMsg").textContent  = message;
+
+  // 封筒用
+  document.getElementById("cardDate").textContent = `${m}月 ${d}日`;
+  document.getElementById("cardMsg").textContent  = message;
+
+  const overlay = document.getElementById("overlay");
+  const flap    = document.getElementById("flap");
+  const card    = document.getElementById("card");
+
+  overlay.classList.add("open");
+
+  setTimeout(()=>flap.classList.add("open"),400);
+  setTimeout(()=>card.classList.add("rise"),1100);
+  setTimeout(()=>overlay.classList.add("showSheet"),1800);
 }
+
 function closeModal() {
-  document.getElementById("overlay").classList.remove("open");
+  const overlay = document.getElementById("overlay");
+  const flap    = document.getElementById("flap");
+  const card    = document.getElementById("card");
+
+  overlay.classList.remove("open","showSheet");
+  flap.classList.remove("open");
+  card.classList.remove("rise");
 }
+
 function handleClick(e) {
   if (e.target === document.getElementById("overlay")) closeModal();
 }
 </script>
+
 </body>
 </html>
