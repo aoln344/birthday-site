@@ -32,6 +32,21 @@
     transform: translateY(16px);
     animation: fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.2s forwards;
   }
+
+  /* ★PC対応ここから追加 */
+  @media (min-width: 768px) {
+    .wrap {
+      width: min(90vw, 520px);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .wrap {
+      width: 600px;
+    }
+  }
+  /* ★ここまで */
+
   @keyframes fadeUp {
     to { opacity:1; transform:translateY(0); }
   }
@@ -48,7 +63,7 @@
   h1 {
     font-size: clamp(28px, 7.5vw, 42px);
     font-weight: 200;
-    line-height: 1.15;
+    line-height: 1.25;
     letter-spacing: -0.02em;
     margin-bottom: 40px;
 
@@ -56,20 +71,7 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-
-    /* ★これ追加（改行防止） */
-    white-space: nowrap;
   }
-
-  /*
-  h1 span {
-    display: block;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  */
 
   .row {
     display: grid;
@@ -198,7 +200,10 @@
 
 <div class="wrap">
   <p class="label">Special Day</p>
-  <h1>誕生日を教えてね<span></span></h1>
+  <h1>
+    誕生日を教えて<br>
+    ね<span></span>
+  </h1>
 
   <div class="row">
     <select id="month"><option value="">月</option></select>
