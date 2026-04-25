@@ -33,7 +33,6 @@
     animation: fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.2s forwards;
   }
 
-  /* ★PC対応ここから追加 */
   @media (min-width: 768px) {
     .wrap {
       width: min(90vw, 520px);
@@ -45,7 +44,6 @@
       width: 600px;
     }
   }
-  /* ★ここまで */
 
   @keyframes fadeUp {
     to { opacity:1; transform:translateY(0); }
@@ -61,7 +59,7 @@
   }
 
   h1 {
-    font-size: clamp(28px, 7.5vw, 42px);
+    font-size: clamp(18px, 4.5vw, 42px); /* ★ここ調整 */
     font-weight: 200;
     line-height: 1.25;
     letter-spacing: -0.02em;
@@ -71,6 +69,8 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+
+    white-space: nowrap; /* ★これ追加 */
   }
 
   .row {
@@ -200,10 +200,7 @@
 
 <div class="wrap">
   <p class="label">Special Day</p>
-  <h1>
-    誕生日を教えて<br>
-    ね<span></span>
-  </h1>
+  <h1>誕生日を教えてね<span></span></h1>
 
   <div class="row">
     <select id="month"><option value="">月</option></select>
