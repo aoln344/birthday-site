@@ -26,7 +26,6 @@ body {
   overflow: hidden;
 }
 
-/* ── メインUI ── */
 .wrap {
   width: min(90vw, 320px);
   opacity: 0;
@@ -67,7 +66,6 @@ button.main {
 button.main:hover { background: #333; }
 button.main:active { transform: scale(0.98); }
 
-/* ── ステージ ── */
 #stage {
   position: fixed; inset: 0; z-index: 100;
   display: flex; justify-content: center; align-items: center;
@@ -81,11 +79,9 @@ button.main:active { transform: scale(0.98); }
   backdrop-filter: blur(10px);
 }
 
-/* ── シーン ── */
 #scene {
   position: relative;
   z-index: 10;
-  /* 封筒160×110、フラップが上に開くと最大70px飛び出す */
   width: 240px;
   height: 360px;
   display: flex;
@@ -97,89 +93,51 @@ button.main:active { transform: scale(0.98); }
 }
 #scene.drop { opacity:1; transform:translateY(0); }
 
-/* ── 封筒ボディ（Canvas SVG） ── */
-/*
-  封筒の構造（viewBox 240×160）:
-  - 本体: rect (0,0,240,160)
-  - 底V字: 左下→中央上→右下
-  - 左右折り線: 左上→中央→左下、右上→中央→右下
-  - 上辺フラップ: 閉じてるとき 左上→中央下→右上（下向き三角）
-                  開くと上に180度回転して 上向き三角になる
-*/
-
-#env-body {
+#envelope-svg {
   position: absolute;
-  bottom: 0; left: 0;
-  width: 240px; height: 160px;
-  z-index: 2;
+  bottom: 0;
+  left: 0;
+  width: 240px;
   overflow: visible;
   filter: drop-shadow(0 8px 24px rgba(0,0,0,0.08));
 }
 
-/* フラップのラッパー：transform-originを上辺中央に */
-#flap-wrap {
-  position: absolute;
-  /* 封筒上辺 = bottom:140px */
-  bottom: 160px;
-  left: 0;
-  width: 240px;
-  height: 90px; /* フラップの深さ */
-  z-index: 3; /* 閉じてるとき封筒の上 */
-  transform-origin: center bottom; /* 上辺中央（封筒との境界）を軸に回転 */
-  transform: rotateX(0deg);
-  transition: transform 0.7s cubic-bezier(0.4,0,0.2,1);
-  /* perspective は親から継承 */
-}
-#scene { perspective: 800px; }
-
-#flap-wrap.open {
-  transform: rotateX(-180deg); /* 上に折り返す */
-  z-index: 1; /* 開いたらカード・封筒の後ろ */
-}
-
-#flap-wrap svg {
-  width: 240px; height: 90px;
-  overflow: visible;
-}
-
-/* ── カード ── */
 #card {
   position: absolute;
-  left: 24px;
-  width: 192px;
+  left: 12px;
+  width: 216px;
   background: white;
   border: 1px solid #e8e6e2;
   border-radius: 6px;
-  padding: 20px 18px 18px;
+  padding: 26px 22px 22px;
   text-align: center;
   box-shadow: 0 2px 16px rgba(0,0,0,0.08);
-  z-index: 4; /* 常に最前面 */
+  z-index: 4;
   bottom: 8px;
   opacity: 0;
   transition: bottom 0.75s cubic-bezier(0.16,1,0.3,1), opacity 0.5s ease;
 }
 #card.rise {
-  bottom: 185px;
+  bottom: 195px;
   opacity: 1;
 }
 
 .card-date {
-  font-size: 10px; font-weight: 300;
+  font-size: 12px; font-weight: 300;
   letter-spacing: 0.2em; color: var(--sub);
-  text-transform: uppercase; margin-bottom: 8px;
+  text-transform: uppercase; margin-bottom: 10px;
 }
 .card-line {
-  width: 24px; height: 1px;
+  width: 32px; height: 1.5px;
   background: linear-gradient(90deg, var(--accent), var(--accent2));
   margin: 0 auto 10px;
 }
 .card-msg {
-  font-size: 13px; font-weight: 300;
+  font-size: 17px; font-weight: 300;
   line-height: 1.7; color: var(--ink);
   letter-spacing: 0.03em;
 }
 
-/* ── closeボタン ── */
 #closeBtn {
   position: relative; z-index: 20;
   background: transparent;
@@ -194,7 +152,6 @@ button.main:active { transform: scale(0.98); }
 #closeBtn.show { opacity: 1; }
 #closeBtn:hover { color: var(--ink); border-color: var(--ink); }
 
-/* キラキラ */
 .spark {
   position: fixed; z-index: 300;
   pointer-events: none; border-radius: 50%;
@@ -222,52 +179,28 @@ button.main:active { transform: scale(0.98); }
   <div id="stageBg"></div>
 
   <div id="scene">
-
-    <!--
-      フラップ
-      閉じてるとき: 下向き三角（左上→中央下→右上）が封筒の上半分を覆う
-      開くとき: transform-origin=下辺（封筒上辺）で rotateX(-180deg) → 上に折り返す
-      z=3（閉）→ z=1（開）でカードの下に潜る
-    -->
-    <div id="flap-wrap">
-      <svg viewBox="0 0 240 90" xmlns="http://www.w3.org/2000/svg" overflow="visible">
-        <!-- フラップ面: 上辺全体 → 中央下点 -->
-        <path d="M0,0 L240,0 L120,82 Z" fill="#eae8e4"/>
-        <!-- フラップ下辺の線（Vの字） -->
-        <polyline points="0,0 120,82 240,0"
-                  fill="none" stroke="#d8d6d2" stroke-width="1.2" stroke-linejoin="round"/>
-        <!-- フラップ上辺=封筒との境界線 -->
-        <line x1="0" y1="0" x2="240" y2="0" stroke="#d8d6d2" stroke-width="1.2"/>
-      </svg>
-    </div>
-
-    <!-- カード z=4 -->
     <div id="card">
       <p class="card-date" id="cardDate"></p>
       <div class="card-line"></div>
       <p class="card-msg" id="cardMsg"></p>
     </div>
 
-    <!-- 封筒ボディ z=2 -->
-    <svg id="env-body" viewBox="0 0 240 160" xmlns="http://www.w3.org/2000/svg" overflow="visible">
-      <!-- 白塗り -->
-      <rect x="0" y="0" width="240" height="160" rx="4" fill="white"/>
-      <!-- 輪郭 -->
-      <rect x="0" y="0" width="240" height="160" rx="4"
-            fill="none" stroke="#d8d6d2" stroke-width="1.2"/>
-      <!-- 底のV字折り線 -->
-      <polyline points="0,160 120,95 240,160"
-                fill="none" stroke="#d8d6d2" stroke-width="1.2"/>
-      <!-- 左の折り線（左上→中央） -->
-      <line x1="0" y1="0" x2="120" y2="75"
-            stroke="#d8d6d2" stroke-width="1.2"/>
-      <!-- 右の折り線（右上→中央） -->
-      <line x1="240" y1="0" x2="120" y2="75"
-            stroke="#d8d6d2" stroke-width="1.2"/>
-      <!-- 上辺（フラップが開いたときの境界線） -->
-      <line x1="0" y1="0" x2="240" y2="0" stroke="#d8d6d2" stroke-width="1.2"/>
+    <svg id="envelope-svg" viewBox="0 0 240 250" xmlns="http://www.w3.org/2000/svg" overflow="visible" height="250">
+      <!-- 封筒内側上半分（フラップが開くと見える部分）: グレー -->
+      <path d="M0,90 L120,172 L240,90 L240,90 L0,90 Z" fill="#e0deda"/>
+      <!-- 封筒白塗り（下半分は白） -->
+      <rect x="0" y="90" width="240" height="160" rx="4" fill="white"/>
+      <!-- 封筒上半分内側グレー（フラップが隠していたエリア）を三角で上書き -->
+      <path id="inner-shadow" d="M0,90 L120,172 L240,90 Z" fill="#e0deda"/>
+      <!-- フラップ: 閉=白(表面), 開=グレー(裏面) -->
+      <path id="flap-path" d="M0,90 L120,172 L240,90" fill="white" stroke="none"/>
+      <path id="flap-stroke" d="M0,90 L120,172 L240,90" fill="none" stroke="#d8d6d2" stroke-width="1.2" stroke-linejoin="round"/>
+      <rect x="0" y="90" width="240" height="160" rx="4" fill="none" stroke="#d8d6d2" stroke-width="1.2"/>
+      <polyline points="0,250 120,185 240,250" fill="none" stroke="#d8d6d2" stroke-width="1.2"/>
+      <line x1="0" y1="90" x2="120" y2="165" stroke="#d8d6d2" stroke-width="1.2"/>
+      <line x1="240" y1="90" x2="120" y2="165" stroke="#d8d6d2" stroke-width="1.2"/>
+      <line x1="0" y1="90" x2="240" y2="90" stroke="#d8d6d2" stroke-width="1.2"/>
     </svg>
-
   </div>
 
   <button id="closeBtn" onclick="closeStage()">close</button>
@@ -297,19 +230,67 @@ function showMessage() {
   runAnim();
 }
 
+let flapTimer = null;
+
+function easeOut(t) {
+  return 1 - Math.pow(1 - t, 3);
+}
+
+function animateFlap(fromY, toY, duration, onComplete) {
+  if (flapTimer) cancelAnimationFrame(flapTimer);
+  const start = performance.now();
+  const flapPath   = document.getElementById("flap-path");
+  const flapStroke = document.getElementById("flap-stroke");
+
+  function step(now) {
+    const elapsed = now - start;
+    const raw = Math.min(elapsed / duration, 1);
+    const t = easeOut(raw);
+    const curY = fromY + (toY - fromY) * t;
+    const d = `M0,90 L120,${curY.toFixed(2)} L240,90`;
+    flapPath.setAttribute("d", d);
+    flapStroke.setAttribute("d", d);
+    if (raw < 1) {
+      flapTimer = requestAnimationFrame(step);
+    } else {
+      flapTimer = null;
+      if (onComplete) onComplete();
+    }
+  }
+  flapTimer = requestAnimationFrame(step);
+}
+
+function setFlapLayer(isOpen) {
+  const flapPath   = document.getElementById("flap-path");
+  const flapStroke = document.getElementById("flap-stroke");
+  const envSvg     = document.getElementById("envelope-svg");
+  const rects      = envSvg.querySelectorAll("rect");
+
+  flapPath.setAttribute("fill", isOpen ? "#e0deda" : "white");
+
+  if (isOpen) {
+    envSvg.insertBefore(flapPath,   rects[1].nextSibling);
+    envSvg.insertBefore(flapStroke, flapPath.nextSibling);
+  } else {
+    envSvg.insertBefore(flapPath,   rects[2]);
+    envSvg.insertBefore(flapStroke, flapPath.nextSibling);
+  }
+}
+
 function runAnim() {
   const stage    = document.getElementById("stage");
   const scene    = document.getElementById("scene");
-  const flap     = document.getElementById("flap-wrap");
   const card     = document.getElementById("card");
   const closeBtn = document.getElementById("closeBtn");
 
-  // リセット
   scene.classList.remove("drop");
-  flap.classList.remove("open");
   card.classList.remove("rise");
   card.style.transition = "none";
   closeBtn.classList.remove("show");
+
+  animateFlap(172, 172, 1);
+  setFlapLayer(false);
+
   void scene.offsetWidth;
 
   stage.classList.add("active");
@@ -319,10 +300,22 @@ function runAnim() {
     scene.classList.add("drop");
   }, 80);
 
-  // フラップ開く
-  setTimeout(() => flap.classList.add("open"), 900);
+  setTimeout(() => {
+    // レイヤーを後ろへ（色はまだ白のまま開く）
+    const flapPath   = document.getElementById("flap-path");
+    const flapStroke = document.getElementById("flap-stroke");
+    const envSvg     = document.getElementById("envelope-svg");
+    const rects      = envSvg.querySelectorAll("rect");
+    envSvg.insertBefore(flapPath,   rects[1].nextSibling);
+    envSvg.insertBefore(flapStroke, flapPath.nextSibling);
+    animateFlap(172, 8, 700, null);
+  }, 900);
 
-  // カード浮上
+  // 開ききった後、少し遅れてグレー（裏面）に切り替え
+  setTimeout(() => {
+    document.getElementById("flap-path").setAttribute("fill", "#e0deda");
+  }, 900 + 700 + 120);
+
   setTimeout(() => {
     card.classList.add("rise");
     spawnSparks();
@@ -334,18 +327,23 @@ function runAnim() {
 function closeStage() {
   const stage    = document.getElementById("stage");
   const scene    = document.getElementById("scene");
-  const flap     = document.getElementById("flap-wrap");
   const card     = document.getElementById("card");
   const closeBtn = document.getElementById("closeBtn");
 
   closeBtn.classList.remove("show");
   card.classList.remove("rise");
-  setTimeout(() => flap.classList.remove("open"), 400);
+
+  setTimeout(() => {
+    setFlapLayer(false);
+    animateFlap(8, 172, 600, null);
+  }, 400);
+
   setTimeout(() => {
     scene.style.transition = "opacity 0.4s, transform 0.4s";
     scene.style.opacity = "0";
     scene.style.transform = "translateY(20px)";
   }, 800);
+
   setTimeout(() => {
     stage.classList.remove("active");
     scene.style.transition = "";
@@ -356,7 +354,8 @@ function closeStage() {
 
 function spawnSparks() {
   const colors = ["#ff4d6d","#8a5cff","#ffcc44","#3c8fff","#fff"];
-  const rect = document.getElementById("env-body").getBoundingClientRect();
+  const svgEl = document.getElementById("envelope-svg");
+  const rect = svgEl.getBoundingClientRect();
   const cx = rect.left + rect.width / 2;
   const cy = rect.top  + rect.height / 2;
   for (let i = 0; i < 22; i++) {
